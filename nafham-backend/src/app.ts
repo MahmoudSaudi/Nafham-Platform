@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
+import prisma from './utils/prisma';
 
 const app: Application = express();
 
@@ -77,6 +78,22 @@ app.get('/api/health', (req: Request, res: Response) => {
         timestamp: new Date().toISOString()
     });
 });
+
+// Liveness probe: is the process alive?
+app.get('/health/live', (_req: Request, res: Response) => {
+    res.status(200).json({ status: 'ok', uptime: process.uptime() });
+});
+
+// Readiness probe: can we reach the DB?
+app.get('/health/ready', async (_req: Request, res: Response) => {
+    try {
+        await prisma.$queryRaw`SELECT 1`;
+        res.status(200).json({ status: 'ready', db: 'up' });
+    } catch {
+        res.status(503).json({ status: 'not_ready', db: 'down' });
+    }
+});
+
 
 // Global Error Handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
