@@ -1,0 +1,32 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Dark Green Gradient for the outer bowl -->
+    <linearGradient id="darkGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064E3B" /> <!-- Emerald 900 -->
+      <stop offset="100%" stop-color="#047857" /> <!-- Emerald 600 -->
+    </linearGradient>
+    
+    <!-- Medium Green Gradient for the inner bowl -->
+    <linearGradient id="mediumGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" /> <!-- Emerald 500 -->
+      <stop offset="100%" stop-color="#10B981" /> <!-- Emerald 400 -->
+    </linearGradient>
+
+    <!-- Light/Vibrant Green for the leaf/dot -->
+    <linearGradient id="leafGreen" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10B981" /> <!-- Emerald 500 -->
+      <stop offset="100%" stop-color="#6EE7B7" /> <!-- Emerald 300 -->
+    </linearGradient>
+  </defs>
+
+  <!-- Dot of the Noon / Stylized Leaf for Growth -->
+  <path d="M 256,70 C 296,70 306,120 256,150 C 206,120 216,70 256,70 Z" fill="url(#leafGreen)" />
+
+  <!-- Inner Curve (Pages / Radiating Knowledge) -->
+  <path d="M 180,240 L 180,270 A 76,76 0 0,0 332,270 L 332,260" 
+        fill="none" stroke="url(#mediumGreen)" stroke-width="40" stroke-linecap="round" />
+
+  <!-- Outer Curve (The bowl of the Noon / The Book) -->
+  <path d="M 100,180 L 100,270 A 156,156 0 0,0 412,270 L 412,220" 
+        fill="none" stroke="url(#darkGreen)" stroke-width="48" stroke-linecap="round" />
+</svg>
