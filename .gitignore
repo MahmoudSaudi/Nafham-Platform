@@ -1,0 +1,25 @@
+# ===== Project-level docs (kept local, not tracked) =====
+nafham-devops-plan.md
+
+# ===== Root-level node artifacts =====
+node_modules/
+package-lock.json
+
+# ===== OS generated =====
+.DS_Store
+Thumbs.db
+
+# ===== IDE =====
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ===== Secrets (defense in depth — subfolders also have their own) =====
+*.pem
+*.key
+*.cert
+.env
+.env.*
+
+# ===== Infra local artifacts =====
+secrets/
