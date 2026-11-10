@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: nafham
+      POSTGRES_USER: nafham_user
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nafham_user -d nafham"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build:
+      context: .
+      target: migrator
+      network: host
+      entitlements:
+        - network.host
+    command: sh -c "npx prisma db push && npm run seed"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://nafham_user:1234@postgres:5432/nafham?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      target: runner
+      network: host
+      entitlements:
+        - network.host
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://nafham_user:1234@postgres:5432/nafham?schema=public
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+
+
+  frontend:
+    build:
+      context: ../nafham
+      target: runner
+      network: host
+      entitlements:
+        - network.host
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:5000/api
+    environment:
+      AUTH_SECRET: e37FvtnqF7xjAxFvYqPz8Na/VQvfM5KAKKmvNncuUy8= 
+      AUTH_TRUST_HOST: "true"
+      INTERNAL_API_URL: "http://backend:5000/api"
+      AUTH_URL: "http://localhost:3000"
+      NEXTAUTH_URL: "http://localhost:3000"
+
+
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  pgdata:

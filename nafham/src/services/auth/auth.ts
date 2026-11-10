@@ -3,6 +3,8 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import FacebookProvider from "next-auth/providers/facebook"
 
+const backendApiUrl = process.env.INTERNAL_API_URL || "http://localhost:5000/api";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     GoogleProvider({
@@ -22,8 +24,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         try {
-          const res = await fetch("http://localhost:5000/api/auth/login", {
-            method: 'POST',
+          const res = await fetch(`${backendApiUrl}/auth/login`, {
+            method: "POST",
             body: JSON.stringify({
               email: credentials?.email,
               password: credentials?.password
@@ -57,8 +59,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         if (account?.provider === "google" || account?.provider === "facebook") {
           try {
-            const res = await fetch("http://localhost:5000/api/auth/social-login", {
-              method: 'POST',
+            const res = await fetch(`${backendApiUrl}/auth/social-login`, {
+              method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 email: user.email,
@@ -93,22 +95,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.rememberMe = (user as any).rememberMe;
         }
 
-        // Handle dynamic session expiration based on rememberMe
         const nowInSeconds = Math.floor(Date.now() / 1000);
         if (token.rememberMe === false) {
-          // Short-lived session: expires in 4 hours if Remember Me is not checked
           token.exp = nowInSeconds + (4 * 60 * 60);
         } else {
-          // Persistent session: 30 days
           token.exp = nowInSeconds + (30 * 24 * 60 * 60);
         }
       }
 
-      // If token has an exp property and has expired, return null/empty or invalidate
-      if (token.exp && typeof token.exp === 'number') {
+      if (token.exp && typeof token.exp === "number") {
         const now = Math.floor(Date.now() / 1000);
         if (now > token.exp) {
-          return null as any; // Invalidates expired token
+          return null as any;
         }
       }
 
