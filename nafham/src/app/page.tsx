@@ -6,7 +6,7 @@ import CoursesListSection from "@/components/shared/home/CoursesListSection";
 export default async function Home() {
   let initialCourses = [];
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/courses`, { 
+    const res = await fetch(`${process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/courses`, { 
       cache: "no-store" // Prevent caching old course IDs from previous seeds during development
     });
     const data = await res.json();

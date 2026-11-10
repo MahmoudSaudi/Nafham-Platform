@@ -47,5 +47,30 @@ services:
       migrate:
         condition: service_completed_successfully
 
+
+
+  frontend:
+    build:
+      context: ../nafham
+      target: runner
+      network: host
+      entitlements:
+        - network.host
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:5000/api
+    environment:
+      AUTH_SECRET: e37FvtnqF7xjAxFvYqPz8Na/VQvfM5KAKKmvNncuUy8= 
+      AUTH_TRUST_HOST: "true"
+      INTERNAL_API_URL: "http://backend:5000/api"
+      AUTH_URL: "http://localhost:3000"
+      NEXTAUTH_URL: "http://localhost:3000"
+
+
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_started
+
 volumes:
   pgdata:

@@ -3,7 +3,7 @@ import { getSession } from 'next-auth/react';
 
 // Separate axios instance for audit that returns the full response (not just data)
 const rawApiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+  baseURL: process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
