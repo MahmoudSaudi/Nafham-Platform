@@ -1,0 +1,70 @@
+name: CI - Backend
+
+on:
+  pull_request:
+    branches: [dev, main]
+    paths:
+      - 'nafham-backend/**' # يشتغل بس لو في تعديل في الباك إند
+      - '.github/workflows/ci-backend.yml'
+  push:
+    branches: [dev, main]
+    paths:
+      - 'nafham-backend/**'
+
+jobs:
+  build-and-test:
+    name: Build & Test Backend
+    runs-on: ubuntu-latest
+
+    # بنشغل داتابيز مؤقتة عشان الاختبارات تشتغل
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: nafham_user
+          POSTGRES_PASSWORD: 1234
+          POSTGRES_DB: nafham
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'nafham-backend/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./nafham-backend
+        run: npm ci
+
+      - name: Generate Prisma Client
+        working-directory: ./nafham-backend
+        run: npx prisma generate
+
+      - name: Push database schema
+        working-directory: ./nafham-backend
+        env:
+          DATABASE_URL: postgresql://nafham_user:1234@localhost:5432/nafham?schema=public
+        run: npx prisma db push
+
+      - name: Run Tests
+        working-directory: ./nafham-backend
+        env:
+          DATABASE_URL: postgresql://nafham_user:1234@localhost:5432/nafham?schema=public
+          JWT_SECRET: test-secret
+          ENCRYPTION_SECRET: 12345678901234567890123456789012 # 32 chars
+        run: npm test
+
+      - name: Build (TypeScript)
+        working-directory: ./nafham-backend
+        run: npm run build
