@@ -1,0 +1,48 @@
+name: CI - Frontend
+
+on:
+  pull_request:
+    branches: [dev, main]
+    paths:
+      - 'nafham/**' # يشتغل بس لو في تعديل في الفرونت إند
+      - '.github/workflows/ci-frontend.yml'
+  push:
+    branches: [dev, main]
+    paths:
+      - 'nafham/**'
+
+jobs:
+  build-and-test:
+    name: Build & Test Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'nafham/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./nafham
+        run: npm ci
+
+      - name: Run Lint (ESLint)
+        working-directory: ./nafham
+        run: npm run lint
+
+      - name: Run Unit Tests (Vitest)
+        working-directory: ./nafham
+        run: npm run test:coverage
+
+      - name: Build Next.js
+        working-directory: ./nafham
+        env:
+          # Next.js بيحتاج المتغيرات دي وقت الـ Build
+          NEXT_PUBLIC_API_URL: http://localhost:5000/api
+          AUTH_SECRET: test-secret-for-ci-only
+        run: npm run build
