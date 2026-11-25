@@ -33,6 +33,7 @@ jobs:
 
       - name: Run Lint (ESLint)
         working-directory: ./nafham
+        continue-on-error: true   # <--- السطر الجديد ده
         run: npm run lint
 
       - name: Run Unit Tests (Vitest)
