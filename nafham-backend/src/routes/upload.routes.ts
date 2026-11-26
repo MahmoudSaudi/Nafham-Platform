@@ -8,12 +8,6 @@ import { uploadImage, processImage } from '../middlewares/upload.middleware';
 
 const router = Router();
 
-// Ensure general uploads directory exists
-const uploadDir = path.join(__dirname, '../../public/uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
 // Use memory storage for general files as well
 const storage = multer.memoryStorage();
 

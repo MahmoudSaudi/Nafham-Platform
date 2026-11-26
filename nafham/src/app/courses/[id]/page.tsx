@@ -12,7 +12,7 @@ export default async function CoursePage({ params }: PageProps) {
   let initialRelatedCourses = [];
 
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const baseUrl = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
     
     // Fetch course details
     const courseRes = await fetch(`${baseUrl}/courses/${courseId}`, {
