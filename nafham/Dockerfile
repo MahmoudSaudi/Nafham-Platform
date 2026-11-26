@@ -4,7 +4,7 @@
 FROM node:22-slim AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # ===== Stage 2: builder =====
 FROM node:22-slim AS builder
